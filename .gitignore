@@ -1,0 +1,13 @@
+# Environment variables
+.env
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Generated files
+import-image.json
+trust-policy.json
+vmimport-role-policy.json

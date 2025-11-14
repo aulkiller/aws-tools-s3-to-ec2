@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: IAM role for EC2 VM Import/Export (vmimport)
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: S3 bucket name for VHD files
+    Default: your-bucket-name
+
+Resources:
+  VmImportRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: vmimport
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: vmie.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: vmimport
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub "arn:aws:s3:::${S3BucketName}"
+                  - !Sub "arn:aws:s3:::${S3BucketName}/*"
+              - Effect: Allow
+                Action:
+                  - ec2:ModifySnapshotAttribute
+                  - ec2:CopySnapshot
+                  - ec2:RegisterImage
+                  - ec2:Describe*
+                Resource: "*"
+
+Outputs:
+  VmImportRoleArn:
+    Description: ARN of the vmimport role
+    Value: !GetAtt VmImportRole.Arn
+
